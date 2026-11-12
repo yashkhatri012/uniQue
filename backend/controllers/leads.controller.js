@@ -1,4 +1,5 @@
 
+import extractLeadData from "../utils/extractLeadData.js";
 
 export const verifyPage = (req, res) => {
     try {
@@ -18,5 +19,37 @@ export const verifyPage = (req, res) => {
 
     } catch (error) {
         res.status(500).json({ message: "Internal server error" , error: error.message });
+    }
+}
+
+export const receiveData = (req, res) => {
+    try {
+        console.log("Received data:", req.body);
+
+        const data = req.body;
+        const leadgenId = data?.entry?.[0]?.changes?.[0]?.value?.leadgen_id;
+        if(!leadgenId) {
+            res.status(400).send("Leadgen ID not found in the payload");
+            return;
+            }
+        
+
+        console.log("extraction started from leadgen ID:", leadgenId);
+        
+        const leadData = extractLeadData(leadgenId);
+        if (!leadData) {
+        res.status(404).send("Lead data not found");
+        return;
+        }
+
+
+       res.status(200).json({
+        success: true,
+        message: "Data fetched successfully",
+        data: leadData
+    });
+    
+    } catch (error) {
+        res.status(500).json({ message: "Error receiving data" , error: error.message });
     }
 }
