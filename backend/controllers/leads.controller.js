@@ -1,5 +1,6 @@
 import { extractLeadData } from "../services/meta.service.js";
 import { saveData } from "../services/db.service.js";
+import { getIO } from "../config/socket.js";
 
 export const verifyPage = (req, res) => {
     try {
@@ -16,6 +17,7 @@ export const verifyPage = (req, res) => {
         } else {
         res.status(403).send("Forbidden");
         }
+        console.log("Webhook verified successfully");
 
     } catch (error) {
         res.status(500).json({ message: "Internal server error" , error: error.message });
@@ -37,13 +39,24 @@ export const receiveData = async (req, res) => {
         console.log("extraction started from leadgen ID:", leadgenId);
         
         const leadData = await extractLeadData(leadgenId);
+
+        console.log("Lead data extracted, in reciveData controller", leadData);
         if (!leadData) {
         res.status(404).send("Lead data not found");
         return;
         }
 
-
+        console.log("Saving lead data to the database...");
         const savedLead = await saveData(leadData);
+
+        console.log("Lead data saved to the database:", savedLead);
+
+        if(!savedLead) {
+            res.status(500).send("Failed to save lead data");
+            return;
+        }
+
+        getIO().emit("new-lead", savedLead);
 
        res.status(200).json({
         success: true,
