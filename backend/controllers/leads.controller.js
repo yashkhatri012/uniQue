@@ -1,5 +1,6 @@
 
 import extractLeadData from "../utils/extractLeadData.js";
+import { saveData } from "../services/db.service.js";
 
 export const verifyPage = (req, res) => {
     try {
@@ -22,7 +23,7 @@ export const verifyPage = (req, res) => {
     }
 }
 
-export const receiveData = (req, res) => {
+export const receiveData = async (req, res) => {
     try {
         console.log("Received data:", req.body);
 
@@ -43,12 +44,15 @@ export const receiveData = (req, res) => {
         }
 
 
+        const savedLead = await saveData(leadData);
+
        res.status(200).json({
         success: true,
         message: "Data fetched successfully",
-        data: leadData
+        data: savedLead
     });
     
+
     } catch (error) {
         res.status(500).json({ message: "Error receiving data" , error: error.message });
     }
