@@ -1,4 +1,4 @@
-import Lead from "../models/.model.js";
+import Lead from "../models/model.js";
 
 export async function saveData(data) {
     try {

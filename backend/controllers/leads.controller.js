@@ -1,5 +1,4 @@
-
-import extractLeadData from "../utils/extractLeadData.js";
+import { extractLeadData } from "../services/meta.service.js";
 import { saveData } from "../services/db.service.js";
 
 export const verifyPage = (req, res) => {
@@ -37,7 +36,7 @@ export const receiveData = async (req, res) => {
 
         console.log("extraction started from leadgen ID:", leadgenId);
         
-        const leadData = extractLeadData(leadgenId);
+        const leadData = await extractLeadData(leadgenId);
         if (!leadData) {
         res.status(404).send("Lead data not found");
         return;
