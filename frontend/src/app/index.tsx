@@ -24,6 +24,9 @@ export default function HomeScreen() {
   const [leads, setLeads] = useState<Lead[]>([]);
  
 
+  
+
+ useEffect(() => {
   const fetchLeadsFromDB = async () => {
     try {
       const response = await fetch(API_URL);
@@ -37,10 +40,7 @@ export default function HomeScreen() {
     } 
   };
 
- useEffect(() => {
   
-
-  fetchLeadsFromDB();
 
   connectSocket();
 
@@ -49,7 +49,11 @@ export default function HomeScreen() {
       fetchLeadsFromDB();
     };
 
+  socket.off("new-lead", handleNewLead);
   socket.on("new-lead", handleNewLead);
+
+  fetchLeadsFromDB();
+
 
 
   return () => {
